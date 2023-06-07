@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-4.3.xsd
+      http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+      http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+      http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+      http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- Root Context: defines shared resources visible to all other web components -->
+
+    <!-- DATASOURCE -->
+    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
+        <constructor-arg ref="hikariConfig"></constructor-arg>  <!-- 아래 id="hikariConfig인 bean에서 커넥션풀 설정을 불러옴 -->
+    </bean>
+
+    <!--
+        com.zaxxer.hikari.HikariConfig(히카리구성은)는 HikariCP라는 자바 데이터베이스 커넥션 풀 라이브러리를 구성하는 데 사용
+        이 클래스는 데이터베이스 연결 풀의 동작 및 속성을 구성하는 데 사용
+        JDBC URL (jdbcUrl): 데이터베이스에 연결하기 위한 JDBC URL을 설정합니다.
+        jdbc:mysql://localhost:3306/mydatabase와 같은 형식
+
+        사용자 이름 (username): 데이터베이스에 연결할 때 사용할 사용자 이름
+        암호 (password): 데이터베이스에 연결할 때 사용할 암호를 설정
+        커넥션 풀 크기 (maximumPoolSize): 동시에 활성화된 최대 커넥션 수를 설정 이 수는 동시에 처리할 수 있는 데이터베이스 연결의 최대 수
+        최소 커넥션 개수 (minimumIdle): 유휴 상태로 유지될 최소한의 커넥션 수를 설정합니다. 이는 애플리케이션이 커넥션 풀에 대한 최소한의 유지 요구 사항을 설정
+        Connection Timeout (connectionTimeout): 데이터베이스 연결 시도 후 타임아웃되는 시간(밀리초 단위)을 설정
+        Idle Timeout (idleTimeout): 커넥션이 유휴 상태로 유지되는 최대 시간(밀리초 단위)을 설정합니다. 이 시간이 경과한 후에는 유휴 커넥션이 닫힘.
+        Max Lifetime (maxLifetime): 커넥션의 최대 수명(밀리초 단위)을 설정합니다. 이 시간이 경과한 후에는 커넥션이 폐기되고 새로운 커넥션이 만들어진다.
+     -->
+    <bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+        <property name="connectionTimeout" value="3000" />
+        <property name="maxLifetime" value="400000" />
+        <property name="maximumPoolSize" value="300" />
+        <property name="minimumIdle" value="20" />
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
+        <property name="jdbcUrl" value="jdbc:mysql://localhost:3306/bitdb?serverTimezone=UTC" />
+        <property name="username" value="root" />
+        <property name="password" value="bit1234" />
+    </bean>
+
+    <!-- log추가 -->
+    <bean class="net.sf.log4jdbc.Log4jdbcProxyDataSource" id="ds">
+        <constructor-arg ref="dataSource"/>
+        <property name="logFormatter">
+            <bean class="net.sf.log4jdbc.tools.Log4JdbcCustomFormatter">
+                <property value="MULTI_LINE" name="loggingType"/>
+                <property value="SQL : " name="sqlPrefix"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="ds"></property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- SqlSession bean을 만드는 공장 객체_Dao와 JDBC를 연결하는 객체 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!-- dataSource : DB를 객체화 시킨 것-->
+        <!-- name의 dataSource는 제조사에서 만들어 놓은 것.-->
+        <!-- ref의 dataSource는 임의로 지어준 이름.(위에서 정해준 DataSource bean의 id) -->
+        <property name="dataSource" ref="ds"></property>
+        <property name="configLocation" value="classpath:/mybatis-config.xml"></property>
+        <property name="mapperLocations" value="classpath:/mappers/**/*Mapper.xml"></property>
+    </bean>
+
+    <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate" destroy-method="clearCache">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+
+    <context:component-scan base-package="com.bit.dao"/>
+    <context:component-scan base-package="com.bit.service"/>
+    <context:component-scan base-package="com.bit.dto"/>
+</beans>

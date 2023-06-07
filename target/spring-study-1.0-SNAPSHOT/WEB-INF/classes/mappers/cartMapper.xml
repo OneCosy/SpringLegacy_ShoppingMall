@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bit.dto.cartMapper">
+    <resultMap type="product" id="productListID">
+        <result property="no" column="no"/>
+        <result property="productName" column="productName"/>
+        <result property="productOrigin" column="productOrigin"/>
+        <result property="productPrice" column="productPrice"/>
+        <result property="productCategory" column="productCategory"/>
+        <result property="productFilename" column="productFilename"/>
+        <result property="id" column="id"/>
+        <result property="date" column="today"/>
+        <result property="seller" column="seller"/>
+        <result property="companyName" column="companyName"/>
+    </resultMap>
+
+    <select id="getIdCheck" parameterType="user" resultType="java.lang.String">
+        SELECT  PASSWORD
+        FROM    ADMINMEMBER
+        WHERE   ID = #{id}
+    </select>
+
+    <select id="idPassCheck" parameterType="java.util.HashMap" resultType="java.lang.String">
+        SELECT PASSWORD FROM ADMINMEMBER WHERE ID=#{id}
+    </select>
+
+    <insert id="productAdminInsert" parameterType="product">
+        INSERT INTO PRODUCT(productName, productOrigin, productPrice, productCategory, productFilename, id, seller, companyName)
+        VALUES(#{productName},#{productOrigin},#{productPrice}, #{productCategory},#{productFilename},#{id}, #{id}, #{companyName})
+    </insert>
+
+    <select id="clientList" resultType="product">
+        SELECT * FROM PRODUCT;
+    </select>
+
+    <sql id="productListSQL">
+        SELECT * FROM PRODUCT
+    </sql>
+
+    <select id="productList" parameterType="java.util.HashMap" resultType="product">
+        <include refid="productListSQL"/>
+        <where>
+            ID=#{id}
+        </where>
+    </select>
+
+    <delete id="productAdminDelete" parameterType="java.lang.Integer">
+        DELETE FROM PRODUCT
+        WHERE  NO = #{no}
+    </delete>
+
+    <select id="productAdminInfo" parameterType="java.lang.Integer" resultType="product">
+        SELECT  *
+        FROM    PRODUCT
+        WHERE   NO = #{no}
+    </select>
+
+    <update id="productAdminUpdate" parameterType="product">
+        UPDATE  PRODUCT
+        SET     NO = #{no},
+                productName = #{productName},
+                productPrice = #{productPrice},
+                productCategory = #{productCategory},
+                <if test="productFilename != null">productFilename = #{productFilename},</if>
+                ID = #{id},
+                today = now(),
+                seller = #{id},
+                companyName = #{companyName}
+        WHERE   NO = #{no}
+    </update>
+
+    <select id="searchList" parameterType="java.util.HashMap" resultType="product">
+        SELECT * FROM PRODUCT
+        <where>
+            <if test="company != 'select'">
+                companyName = #{company}
+            </if>
+            <if test="column != null and column != 'select'">
+                AND ${column} LIKE CONCAT('%', #{inputText}, '%')
+            </if>
+            <if test="column = 'select' and inputText != null">
+                AND (productName LIKE CONCAT('%', #{inputText}, '%') OR
+                     productOrigin LIKE CONCAT('%', #{inputText}, '%') OR
+                     productCategory LIKE CONCAT('%', #{inputText}, '%'))
+            </if>
+        </where>
+    </select>
+
+    <select id="searchInsertList" parameterType="java.util.HashMap" resultType="product">
+        SELECT * FROM PRODUCT
+        <where>
+            <if test="company != 'select'">
+                companyName = #{company}
+            </if>
+            <if test="inputText != null">
+                AND (productName LIKE CONCAT('%', #{inputText}, '%') OR
+                productOrigin LIKE CONCAT('%', #{inputText}, '%') OR
+                productCategory LIKE CONCAT('%', #{inputText}, '%'))
+            </if>
+        </where>
+    </select>
+</mapper>
