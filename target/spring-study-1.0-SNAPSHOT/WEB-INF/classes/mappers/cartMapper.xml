@@ -102,4 +102,20 @@
             </if>
         </where>
     </select>
+
+    <insert id="insertCartProduct" parameterType="product">
+        INSERT INTO CART (id, productName, productFilename, productOrigin, productPrice, productCategory, regDate)
+        VALUES (#{id}, #{productName}, #{productFilename}, #{productOrigin}, #{productPrice}, #{productCategory}, now())
+    </insert>
+
+    <select id="selectCartList" parameterType="java.lang.String" resultType="Cart">
+        SELECT  *
+        FROM    CART
+        WHERE   id = #{id}
+    </select>
+
+    <delete id="deleteCartProduct" parameterType="java.lang.Integer">
+        DELETE FROM CART
+        WHERE no = #{no}
+    </delete>
 </mapper>

@@ -1,5 +1,6 @@
 package com.bit.service;
 
+import com.bit.dto.CartDTO;
 import com.bit.dto.ProductDTO;
 import com.bit.dto.UserDTO;
 
@@ -17,4 +18,7 @@ public interface ShoppingService {
     public List<ProductDTO> productList(HashMap<String, Object> map);
     public List<ProductDTO> searchList(HashMap<String, Object> map);
     public List<ProductDTO> searchInsertList(HashMap<String, Object> map);
+    public void insertCartProduct(ProductDTO dto);
+    public List<CartDTO> cartList(HashMap<String, Object> map);
+    public int deleteCart(int no);
 }

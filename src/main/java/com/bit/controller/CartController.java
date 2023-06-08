@@ -1,5 +1,6 @@
 package com.bit.controller;
 
+import com.bit.dto.CartDTO;
 import com.bit.dto.ProductDTO;
 import com.bit.dto.UserDTO;
 import com.bit.service.ShoppingService;
@@ -96,12 +97,6 @@ public class CartController {
         return "cart/productInfo";
     }
 
-    @GetMapping(value = "cartAdd")
-    public String cartAddProcess() {
-        System.out.println("cartAddProcess");
-        return "cart/cartList";
-    }
-
     @ResponseBody
     @PostMapping("productModify")
     public ProductDTO getProduct(int no, HttpServletResponse response) {
@@ -173,5 +168,46 @@ public class CartController {
         model.addAttribute("productList", productList);
 
         return "cart/productAdd";
+    }
+
+    @RequestMapping(value = "cartAdd", method = RequestMethod.POST)
+    public String cartAddProcess(@RequestParam("no") String no, HttpSession session) {
+        int productNo = Integer.parseInt(no);
+
+        ProductDTO dto = service.productAdminInfo(productNo);
+        dto.setId((String)session.getAttribute("id"));
+        System.out.println("dto = " + dto);
+
+        // dto를 장바구니 DB에 저장
+        service.insertCartProduct(dto);
+
+        return "redirect:/cartList";
+    }
+
+    @GetMapping(value="cartList")
+    public String buyProductInfo(HttpSession session, Model model) {
+        String id = (String)session.getAttribute("id");
+        int sum = 0;
+
+        // Cart DB 리스트 호출
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("id", id);
+
+        List<CartDTO> cartList = service.cartList(map);
+
+        for (CartDTO dto : cartList) {
+            sum += Integer.parseInt(dto.getProductPrice());
+        }
+
+        model.addAttribute("cartList", cartList);
+        model.addAttribute("total", sum);
+
+        return "cart/cartList";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "cartDeleteProcess", method = RequestMethod.POST)
+    public int cartDeleteProcess(@RequestParam("no") int no) {
+        return service.deleteCart(no);
     }
 }

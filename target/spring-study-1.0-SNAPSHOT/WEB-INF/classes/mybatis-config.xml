@@ -9,6 +9,7 @@
 			<typeAlias type="com.bit.dto.BitDemoDTO" alias="bit"/>
 			<typeAlias type="com.bit.dto.ProductDTO" alias="product"/>
 			<typeAlias type="com.bit.dto.UserDTO" alias="user"/>
+			<typeAlias type="com.bit.dto.CartDTO" alias="cart"/>
 		</typeAliases>
 
 	</configuration>

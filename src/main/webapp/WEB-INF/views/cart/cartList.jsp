@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -12,7 +13,23 @@
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
     <script type="text/javascript">
+        $(function(){
+            $("a#cartDelete").click(function(){
+                $.ajax({
+                    url: '${pageContext.request.contextPath}/cartDeleteProcess',
+                    type: 'POST',
+                    data: {"no":$(this).attr("class")},
+                    success: function(data) {
+                        if (data) {
+                            document.location.href = '${pageContext.request.contextPath}/cartList';
+                        }
+                    }, error: function() {
+                        console.log("error");
+                    }
 
+                });
+            });
+        });
     </script>
 </head>
 <body>
@@ -27,7 +44,10 @@
                     <div class="contents">
 
                         <div class="btnSet clfix mgb15">
-                            <span class="fr"> <span class="button"><a href="">목록</a></span>
+                            <span class="fr">
+                                <span class="button">
+                                    <a href="${pageContext.request.contextPath}/clientProductList">목록</a>
+                                </span>
                             </span>
                         </div>
 
@@ -64,45 +84,45 @@
                                 <col width="170"/>
                             </colgroup>
                             <thead>
-
-                            <tr>
-                                <th scope="col">NO.</th>
-                                <th scope="col">상품명</th>
-                                <th scope="col">이미지</th>
-                                <th scope="col">원산지</th>
-                                <th scope="col">가격</th>
-                                <th scope="col">종류</th>
-                                <th scope="col">날짜</th>
-                                <th scope="col">상태</th>
-                            </tr>
+                                <tr>
+                                    <th scope="col">NO.</th>
+                                    <th scope="col">상품명</th>
+                                    <th scope="col">이미지</th>
+                                    <th scope="col">원산지</th>
+                                    <th scope="col">가격</th>
+                                    <th scope="col">종류</th>
+                                    <th scope="col">날짜</th>
+                                    <th scope="col">상태</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <td></td>
-                                <td>
-                                </td>
-                                <td>
-                                    <a href=""><img src="" width="50" height="50"></img></a></td>
-                                <td></td>
-                                <td>
-                                </td>
-                                <td></td>
-                                <td></td>
-                                <td>
-                                            <span class="buttonFuc"><a href="#">구매</a>
+                                <c:forEach var="entry" items="${cartList}">
+                                    <tr>
+                                        <td>${entry.no}</td>
+                                        <td>${entry.productName}</td>
+                                        <td>
+                                            <a href=""><img src="${pageContext.request.contextPath}/resources/upload/${entry.productFilename}" width="50" height="50"/></a>
+                                        </td>
+                                        <td>${entry.productOrigin}</td>
+                                        <td>${entry.productPrice}</td>
+                                        <td>${entry.productCategory}</td>
+                                        <td>${entry.regDate}</td>
+                                        <td>
+                                            <span class="buttonFuc">
+                                                <a href="#">구매</a>
                                             </span>
-                                    <span class="buttonFuc">
-
-                                                <a href="">삭제</a></span>
-                                </td>
-                            </tr>
+                                            <span class="buttonFuc">
+                                                <a href="#" id="cartDelete" class="${entry.no}">삭제</a>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
                             </tbody>
                         </table>
                         <table class="bbsList" align="right">
                             <tr align="right">
                                 <th align="right">총합계 &nbsp;
-                                    <input type="text" name="total" id="total" class="inputText" size="30" align="right"
-                                           value="0"/>
+                                    <input type="text" name="total" id="total" class="inputText" size="30" align="right" value="${total}"/>
                                 </th>
                             </tr>
                         </table>

@@ -1,5 +1,6 @@
 package com.bit.dao;
 
+import com.bit.dto.CartDTO;
 import com.bit.dto.ProductDTO;
 import com.bit.dto.UserDTO;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -59,5 +60,20 @@ public class ShoppingDaoImp implements ShoppingDao {
     @Override
     public List<ProductDTO> searchInsertList(HashMap<String, Object> map) {
         return sqlSession.selectList(nameSpace + ".searchInsertList", map);
+    }
+
+    @Override
+    public void insertCartProduct(ProductDTO dto) {
+        sqlSession.insert(nameSpace + ".insertCartProduct", dto);
+    }
+
+    @Override
+    public List<CartDTO> cartList(HashMap<String, Object> map) {
+        return sqlSession.selectList(nameSpace + ".selectCartList", map);
+    }
+
+    @Override
+    public int deleteCart(int no) {
+        return sqlSession.delete(nameSpace + ".deleteCartProduct", no);
     }
 }

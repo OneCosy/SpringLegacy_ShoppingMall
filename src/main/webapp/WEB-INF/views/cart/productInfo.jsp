@@ -12,6 +12,14 @@
 
     <link href="${pageContext.request.contextPath}/resources/css/default.css" rel="stylesheet" type="text/css"/>
 
+    <script type="text/javascript">
+        $(function() {
+            $("a#cartProduct").click(function() {
+                $("#cartListForm").submit();
+            });
+        });
+    </script>
+
 </head>
 <body>
     <div id="wrap">
@@ -25,54 +33,57 @@
                     <div class="con_title">
                         <p>게시판 상세보기</p>
                     </div>
-                    <div class="contents">
-                        <div class="btnSet clfix mgb15">
+
+                    <form action="${pageContext.request.contextPath}/cartAdd" method="post" id="cartListForm">
+                        <div class="contents">
+                            <div class="btnSet clfix mgb15">
                             <span class="fr">
-                                <span class="button"><a href="#">물품구매</a></span>
-                                <span class="button"><a href="${pageContext.request.contextPath}/cartList" id="cartList">장바구니</a></span>
+                                <span class="button"><a href="#" id="cartProduct">물품구매</a></span>
+                                <span class="button"><a href="${pageContext.request.contextPath}/cartList">장바구니</a></span>
                                 <span class="button"><a href="#">목록</a></span>
                             </span>
+                            </div>
+                            <table class="bbsList">
+                                <colgroup>
+                                    <col width="400"/>
+                                    <col width="100"/>
+                                    <col width=""/>
+                                </colgroup>
+                                <tr>
+                                    <th scope="col" class="fir">이미지</th>
+                                    <th scope="col">글번호</th>
+                                    <td>${info.no}</td>
+                                    <input type="hidden" name="no" value="${info.no}"/>
+                                </tr>
+                                <tr>
+
+                                    <td class="fir" rowspan="7"><img src="${pageContext.request.contextPath}/resources/upload/${info.productFilename}" width="400" height="300"/></td>
+                                    <th scope="col">아이디</th>
+                                    <td>${info.id}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">상품이름</th>
+                                    <td>${info.productName}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">가격</th>
+                                    <td>${info.productPrice}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">원산지</th>
+                                    <td>${info.productOrigin}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">카테고리</th>
+                                    <td>${info.productCategory}</td>
+                                </tr>
+                                <tr>
+                                    <th scope="col">등록일</th>
+                                    <td>${info.today}</td>
+                                </tr>
+                            </table>
                         </div>
-                        <table class="bbsList">
-                            <colgroup>
-                                <col width="400"/>
-                                <col width="100"/>
-                                <col width=""/>
-                            </colgroup>
-                            <tr>
-                                <th scope="col" class="fir">이미지</th>
-                                <th scope="col">글번호</th>
-                                <td>${info.no}</td>
-                            </tr>
-                            <tr>
-
-                                <td class="fir" rowspan="7"><img src="${pageContext.request.contextPath}/resources/upload/${info.productFilename}" width="400" height="300"/></td>
-                                <th scope="col">아이디</th>
-                                <td>${info.id}</td>
-                            </tr>
-                            <tr>
-                                <th scope="col">상품이름</th>
-                                <td>${info.productName}</td>
-                            </tr>
-                            <tr>
-                                <th scope="col">가격</th>
-                                <td>${info.productPrice}</td>
-                            </tr>
-                            <tr>
-                                <th scope="col">원산지</th>
-                                <td>${info.productOrigin}</td>
-                            </tr>
-                            <tr>
-                                <th scope="col">카테고리</th>
-                                <td>${info.productCategory}</td>
-                            </tr>
-                            <tr>
-                                <th scope="col">등록일</th>
-                                <td>${info.today}</td>
-                            </tr>
-                        </table>
-
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

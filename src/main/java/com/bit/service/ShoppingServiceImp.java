@@ -1,6 +1,7 @@
 package com.bit.service;
 
 import com.bit.dao.ShoppingDao;
+import com.bit.dto.CartDTO;
 import com.bit.dto.ProductDTO;
 import com.bit.dto.UserDTO;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -82,5 +83,20 @@ public class ShoppingServiceImp implements ShoppingService {
     @Override
     public List<ProductDTO> searchInsertList(HashMap<String, Object> map) {
         return dao.searchInsertList(map);
+    }
+
+    @Override
+    public void insertCartProduct(ProductDTO dto) {
+        dao.insertCartProduct(dto);
+    }
+
+    @Override
+    public List<CartDTO> cartList(HashMap<String, Object> map) {
+        return dao.cartList(map);
+    }
+
+    @Override
+    public int deleteCart(int no) {
+        return dao.deleteCart(no);
     }
 }
